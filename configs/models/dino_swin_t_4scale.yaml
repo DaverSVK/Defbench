@@ -1,0 +1,47 @@
+name: dino_swin_t_4scale
+display_name: "DINO (DETR with Improved deNoising anchOr boxes) + Swin-T, 4-scale - detrex"
+family: detr
+tasks: [bbox]
+environment: detectron2
+adapter: defectbench.models.adapters.detectron2_adapter:Detectron2Adapter
+status: implemented
+heavy: true
+extra_packages: [detectron2, detrex]
+notes: >
+  DINO here is the DETR-type DETECTOR (Zhang et al., ICLR 2023) - not the self-supervised representation models
+  DINOv2/DINOv3 (those appear only as backbones, e.g. inside DEIMv2 and RF-DETR).
+  The DINO authors' repository (IDEA-Research/DINO) releases only R50 and Swin-L checkpoints; the Swin-T
+  configuration + COCO checkpoint are released by the same group in detrex, which is therefore used.
+source:
+  repo: https://github.com/IDEA-Research/detrex
+  commit: e244e6c3da3e84566728c52c21fb061d23ce0e2f
+  config: projects/dino/configs/dino-swin/dino_swin_tiny_224_4scale_12ep.py
+  license: Apache-2.0
+  paper: "Zhang et al., DINO: DETR with Improved DeNoising Anchor Boxes for End-to-End Object Detection, ICLR 2023"
+pretrained:
+  init: coco
+  url: https://github.com/IDEA-Research/detrex-storage/releases/download/v0.1.1/dino_swin_tiny_224_4scale_12ep.pth
+  source: "official detrex DINO-Swin-T-224-4scale COCO checkpoint (IN1k backbone, 12 ep, box AP 51.3)"
+model:
+  kind: dino
+  root_env: DETREX_ROOT
+  root_default: /opt/detrex
+  config: projects/dino/configs/dino-swin/dino_swin_tiny_224_4scale_12ep.py
+train:
+  epochs: 36
+  batch_size: 4                  # recipe: 16
+  lr: 2.5e-05                    # recipe AdamW 1e-4 @ bs 16 (backbone x0.1), linear scaling to bs 4
+  weight_decay: 0.0001
+  warmup_iters: 0
+  milestones: [0.917]            # recipe: lr drop after 11 of 12 epochs
+  amp: true
+  num_workers: 2
+  patience: 10
+inference:
+  score_thresh: 0.001
+  max_dets: 100
+image_score_rule: max
+profiles:
+  default: {}
+  gpu8gb:
+    train: {batch_size: 2, lr: 1.25e-05}

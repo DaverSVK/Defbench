@@ -1,0 +1,6 @@
+_base_: _rfdetr_base
+name: rfdetr_nano
+display_name: "RF-DETR Nano (384 px)"
+status: implemented
+model:
+  variant: nano          # native resolution 384 (rfdetr RFDETRNanoConfig)

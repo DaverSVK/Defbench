@@ -1,0 +1,26 @@
+_base_: _detr_family_base
+name: rtdetrv2_s
+display_name: "RT-DETRv2-S (ResNet-18-vd)"
+status: implemented
+source:
+  repo: https://github.com/lyuwenyu/RT-DETR (rtdetrv2_pytorch)
+  commit: 29320b6fd828f8e0987a71426cf2d961b09dfed7
+  config: rtdetrv2_pytorch/configs/rtdetrv2/rtdetrv2_r18vd_120e_coco.yml
+  license: Apache-2.0
+  paper: "Lv et al., RT-DETRv2: Improved Baseline with Bag-of-Freebies for Real-Time Detection Transformer, 2024"
+pretrained:
+  init: coco
+  url: https://github.com/lyuwenyu/storage/releases/download/v0.2/rtdetrv2_r18vd_120e_coco_rerun_48.1.pth
+  source: "official RT-DETRv2-S COCO checkpoint (48.1 AP)"
+model:
+  repo: RT-DETR
+  repo_subdir: rtdetrv2_pytorch
+  package: src
+  base_config: configs/rtdetrv2/rtdetrv2_r18vd_120e_coco.yml
+  input_size: 640
+  normalize: null
+schedule_overrides: {}          # official r18vd recipe (120 epochs, policy stop at 117), + early stopping
+smoke_overrides:
+  epoches: 1
+  train_dataloader: {total_batch_size: 2}
+  val_dataloader: {total_batch_size: 2}

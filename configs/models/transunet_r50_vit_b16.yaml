@@ -1,0 +1,25 @@
+_base_: _seg_base
+name: transunet_r50_vit_b16
+display_name: "TransUNet (R50 + ViT-B/16, ImageNet-21k) - official implementation"
+status: verified
+source:
+  implementation: networks.vit_seg_modeling.VisionTransformer (CONFIGS['R50-ViT-B_16'])
+  repo: https://github.com/Beckschen/TransUNet
+  commit: 02ef0010b36eb8328b5e689eadaf613602edf9b8
+  license: Apache-2.0
+  paper: "Chen et al., TransUNet, arXiv 2102.04306"
+pretrained:
+  init: imagenet21k
+  url: https://storage.googleapis.com/vit_models/imagenet21k/R50+ViT-B_16.npz
+  source: "Google ViT R50+ViT-B/16 ImageNet-21k checkpoint (as in the official README)"
+model:
+  arch: transunet
+  vit_name: R50-ViT-B_16
+  n_skip: 3
+  normalize: half                   # Google ViT checkpoints expect inputs scaled to [-1, 1]
+train:
+  # official trainer: SGD lr 0.01 (batch 24, lr scaled linearly for other batch sizes), momentum 0.9,
+  # wd 1e-4, poly decay (power 0.9), loss 0.5 CE + 0.5 Dice
+  optimizer: {type: sgd, lr: 0.00333, momentum: 0.9, weight_decay: 0.0001}   # 0.01 * 8/24
+  scheduler: {type: poly, power: 0.9, warmup_iters: 0}
+heavy: true                         # ~105 M parameters

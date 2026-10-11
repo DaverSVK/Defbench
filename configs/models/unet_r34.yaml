@@ -1,0 +1,19 @@
+_base_: _seg_base
+name: unet_r34
+display_name: "U-Net (ResNet-34 encoder, ImageNet) - segmentation_models_pytorch"
+status: verified
+source:
+  implementation: segmentation_models_pytorch.Unet
+  repo: https://github.com/qubvel-org/segmentation_models.pytorch
+  version: segmentation-models-pytorch==0.5.0
+  license: MIT (code); encoder weights ImageNet-1k (torchvision ResNet-34, BSD-3)
+  paper: "Ronneberger et al., U-Net, MICCAI 2015"
+pretrained:
+  init: imagenet
+  source: "ResNet-34 ImageNet-1k encoder weights (smp 'imagenet')"
+model:
+  arch: smp_unet
+  encoder: resnet34
+train:
+  optimizer: {type: adamw, lr: 0.0003, weight_decay: 0.0001}
+  scheduler: {type: warmup_cosine, warmup_iters: 200, warmup_factor: 0.01, min_lr_ratio: 0.01}

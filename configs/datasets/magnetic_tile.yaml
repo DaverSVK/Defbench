@@ -1,0 +1,44 @@
+name: magnetic_tile
+display_name: "Magnetic Tile Surface Defect Dataset (MT)"
+kaggle_slug: alex000kim/magnetic-tile-surface-defects
+url: https://www.kaggle.com/datasets/alex000kim/magnetic-tile-surface-defects
+raw_root: data/raw/magnetic_tile
+processed_root: data/processed/magnetic_tile
+format: mask_folders
+class_dir_regex: '^MT_(.+)$'          # class = nearest ancestor folder "MT_<Class>"
+normal_class_dirs: [Free]             # MT_Free = defect-free by annotation (all-zero masks)
+classes: [Blowhole, Break, Crack, Fray, Uneven]
+image_exts: [.jpg]
+mask:
+  suffix: .png                        # mask has the same stem as the image, same folder
+  binarize_threshold: 128             # masks are 8-bit with soft edges (values 1..254): defect = value >= 128
+  semantics: semantic_per_image_class # one binary mask per image, pixel class = folder class
+  empty_defect_mask_policy: exclude   # defect-folder image whose mask is empty -> excluded (cannot be a negative)
+derived_boxes:
+  # Boxes for detectors are DERIVED from the semantic masks (connected components).
+  # They are flagged box_source=derived_from_mask everywhere and are NOT true instances.
+  connectivity: 8
+  min_area: 1                         # no size filter: every connected component yields one derived box
+group:
+  # The file name exp<E>_num_<N>: N is a global acquisition counter; the same tile ROI is captured
+  # in exp1..exp6 with consecutive N (gaps ~10-100). A new group starts when the gap exceeds max_gap.
+  method: sequence_gap
+  regex: 'exp(?P<exp>\d+)_num_(?P<num>\d+)'
+  key: num
+  scope: global                       # across classes (normal and defect crops of the same capture)
+  max_gap: 300
+near_duplicates:
+  hash: phash
+  max_distance: 4
+  use_for_grouping: true
+split:
+  strategy: stratified_group
+  ratios: {train: 0.70, val: 0.15, test: 0.15}
+  split_seed: 20260929
+input:
+  channels: 1
+  channel_policy: replicate_gray_to_rgb
+tasks:
+  bbox: derived_from_mask
+  mask: annotation
+  normal_images: true

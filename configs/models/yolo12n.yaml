@@ -1,0 +1,13 @@
+_base_: _ultralytics_base
+name: yolo12n
+display_name: "YOLO12-N (Ultralytics)"
+status: implemented
+source:
+  paper: "Tian et al., YOLOv12: Attention-Centric Real-Time Object Detectors, 2025 (sunsmarterjie/yolov12; Ultralytics-maintained implementation)"
+model:
+  weights: yolo12n
+notes: >
+  Ultralytics documents YOLO12 as a community release that "may exhibit training instability, elevated memory
+  consumption" (docs.ultralytics.com/models/yolo12). The Ultralytics implementation is used because it shares the
+  trainer/evaluator with YOLO26/YOLOv10 (controlled comparison); the original repo sunsmarterjie/yolov12
+  (AGPL-3.0, commit 2abab7153a065fb2925e8088e9ca2b19016ab7d6) is itself a fork of Ultralytics.

@@ -1,0 +1,45 @@
+# Isolated execution environments. Frameworks with incompatible pins are NEVER mixed.
+# type venv   -> <path>/Scripts/python.exe (Windows) or <path>/bin/python (Linux)
+# type docker -> `docker run --gpus all -v <project>:/workspace <image> python -m defectbench.runners.run_adapter ...`
+core:
+  type: venv
+  path: envs/core
+  python: "3.11"
+  requirements: requirements/core.txt
+  torch: "torch==2.11.0 torchvision==0.26.0 --index-url https://download.pytorch.org/whl/cu128"
+  models: [faster_rcnn_r50_fpn, faster_rcnn_r50_fpn_cbam, unet_r34, unet_r34_scratch, attention_unet, transunet_r50_vit_b16, swin_unet_t]
+ultralytics:
+  type: venv
+  path: envs/ultralytics
+  python: "3.11"
+  requirements: requirements/ultralytics.txt
+  torch: "torch==2.11.0 torchvision==0.26.0 --index-url https://download.pytorch.org/whl/cu128"
+  models: [yolo26n, yolo26s, yolov10n, yolov10s, yolo12n, yolo12s]
+rfdetr:
+  type: venv
+  path: envs/rfdetr
+  python: "3.11"
+  requirements: requirements/rfdetr.txt
+  torch: "torch==2.11.0 torchvision==0.26.0 --index-url https://download.pytorch.org/whl/cu128"
+  models: [rfdetr_nano, rfdetr_small]
+detr_family:
+  # DEIMv2, D-FINE and RT-DETRv2 share the RT-DETR "engine" code base and requirements; each model runs
+  # from its own cloned repository (cwd + sys.path), never importing another repo.
+  type: venv
+  path: envs/detr_family
+  python: "3.11"
+  requirements: requirements/detr_family.txt
+  torchvision_v2_shim: true    # DEIMv2 transforms written for torchvision 0.20 (see runners/shims/sitecustomize.py)
+  torch: "torch==2.11.0 torchvision==0.26.0 --index-url https://download.pytorch.org/whl/cu128"
+  models: [deimv2_dinov3_s, dfine_s, rtdetrv2_s]
+detectron2:
+  # Detectron2 (ViTDet) and detrex (DINO) need compiled CUDA ops -> Linux container (WSL2 / Linux host)
+  type: docker
+  image: defectbench/detectron2:cu128
+  dockerfile: docker/detectron2.Dockerfile
+  models: [vitdet_b_mask_rcnn_boxonly, dino_swin_t_4scale]
+mmdet:
+  type: docker
+  image: defectbench/mmdet:cu128
+  dockerfile: docker/mmdet.Dockerfile
+  models: [cascade_mask_rcnn_swin_t, cascade_rcnn_swin_t_boxonly]

@@ -1,0 +1,10 @@
+_base_: _mmdet_swin_base
+name: cascade_rcnn_swin_t_boxonly
+display_name: "Cascade R-CNN + Swin-T, BOX-ONLY mode (mask head removed, no mask loss)"
+tasks: [bbox]
+model:
+  base_config: configs/cascade_rcnn/cascade-rcnn_r50_fpn_1x_coco.py
+  with_mask: false
+notes: >
+  Box-only variant of cascade_mask_rcnn_swin_t for datasets without pixel masks. Initialised from the same
+  official Cascade MASK R-CNN Swin-T COCO checkpoint (mask-head weights unused).

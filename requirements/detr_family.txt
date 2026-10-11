@@ -1,0 +1,19 @@
+# DEIMv2 / D-FINE / RT-DETRv2 (shared RT-DETR "engine" code base, each run from its own repo checkout).
+# Upstream requirements: DEIMv2 pins torch==2.5.1/torchvision==0.20.1, D-FINE and RT-DETRv2 torch>=2.0.1.
+# torch 2.5.1 has no kernels for Blackwell (sm_120, RTX 50xx) -> we use torch 2.11.0+cu128 (DEVIATION from the
+# DEIMv2 pin, verified by the smoke tests of this project, see README "Verification status").
+# torch: torch==2.11.0 torchvision==0.26.0 --index-url https://download.pytorch.org/whl/cu128
+faster-coco-eval>=1.6.7
+PyYAML
+tensorboard
+scipy
+calflops
+transformers
+loguru
+pycocotools
+huggingface_hub
+safetensors
+numpy>=2.0,<2.4
+pillow
+opencv-python-headless
+matplotlib              # imported by D-FINE src/solver/validator.py (not in its requirements.txt)

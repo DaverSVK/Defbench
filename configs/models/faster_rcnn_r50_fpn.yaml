@@ -1,0 +1,5 @@
+_base_: _frcnn_base
+name: faster_rcnn_r50_fpn
+display_name: "Faster R-CNN + ResNet-50-FPN (reference)"
+status: verified
+notes: "Reference model for the controlled CBAM comparison (faster_rcnn_r50_fpn_cbam)."

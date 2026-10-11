@@ -1,0 +1,6 @@
+name: default
+description: >
+  Default hardware assumption: ONE CUDA GPU with approx. 12-16 GB VRAM (e.g. RTX 4070 Ti / 4080 /
+  A4000 / T4-16GB), AMP enabled. Model configs contain batch sizes for this profile; models marked
+  `heavy: true` may need the gpu8gb or a reduced configuration.
+gpu_memory_gb: [12, 16]

@@ -1,0 +1,22 @@
+name: vit_adapter_dino
+display_name: "ViT-Adapter + DINO"
+family: vit_detector
+tasks: [bbox]
+environment: none
+adapter: none
+status: unsupported
+source:
+  repo: https://github.com/czczup/ViT-Adapter
+  commit: fd64a5190f9f4530e8e5961cc87b2a3ad591190b
+  license: Apache-2.0
+  paper: "Chen et al., Vision Transformer Adapter for Dense Predictions, ICLR 2023"
+unsupported_reason: >
+  Verified in the official repository: (1) detection/ provides ViT-Adapter with Mask R-CNN, Cascade Mask R-CNN,
+  HTC++, ATSS, GFL, Sparse R-CNN and Mask2Former - no closed-set DINO detector config or checkpoint;
+  (2) the only DINO configs (wsdm2023/, e.g. dino_4scale_uniperceiver_adapter_base_6ep_gqa.py) are a
+  language-conditioned GroundingDINO (num_classes=1, text query) for the WSDM Cup 2023 visual-grounding task with
+  Uni-Perceiver-B/L backbones - not a multi-class defect detector; (3) all ViT-Adapter code requires
+  mmdet 2.22 / mmcv-full 1.4.2 / torch 1.9 + CUDA 11.1, whose CUDA ops cannot run on sm_120 (RTX 50xx) GPUs.
+  Building an unofficial ViT-Adapter-backbone + DINO-head composition would be a new, unpublished model, so it is
+  NOT substituted silently. Closest verified alternatives in this benchmark: ViTDet-B (plain ViT detector) and
+  DINO-Swin-T (DINO detector); they are reported under their own names.

@@ -1,0 +1,11 @@
+_base_: unet_r34
+name: unet_r34_scratch
+display_name: "U-Net (ResNet-34 encoder) trained FROM SCRATCH - control for Attention U-Net"
+status: verified
+pretrained:
+  init: none
+  from_scratch_explicit: true
+  source: "none (explicit from-scratch control run)"
+notes: >
+  Attention U-Net has no public pretrained 2D weights; this explicit from-scratch U-Net allows comparing
+  the two architectures without the confound of ImageNet pretraining.

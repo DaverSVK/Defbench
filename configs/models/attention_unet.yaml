@@ -1,0 +1,26 @@
+_base_: _seg_base
+name: attention_unet
+display_name: "Attention U-Net (Oktay et al. 2018) - MONAI AttentionUnet, from scratch"
+status: verified
+source:
+  implementation: monai.networks.nets.AttentionUnet
+  repo: https://github.com/Project-MONAI/MONAI
+  version: monai==1.6.1
+  license: Apache-2.0
+  paper: "Oktay et al., Attention U-Net: Learning Where to Look for the Pancreas, MIDL 2018"
+  note: >
+    The authors' repository (ozan-oktay/Attention-Gated-Networks, MIT, last commit 2020) targets
+    PyTorch 0.4/1.x and 3D medical data; MONAI's maintained 2D/3D implementation of the same
+    additive attention gates is used instead. No public pretrained 2D weights exist.
+pretrained:
+  init: none
+  from_scratch_explicit: true
+  source: "none - no official pretrained weights available (explicit from-scratch training)"
+model:
+  arch: monai_attention_unet
+  channels: [32, 64, 128, 256, 512]
+  strides: [2, 2, 2, 2]
+  dropout: 0.0
+train:
+  optimizer: {type: adamw, lr: 0.0003, weight_decay: 0.0001}
+  scheduler: {type: warmup_cosine, warmup_iters: 200, warmup_factor: 0.01, min_lr_ratio: 0.01}

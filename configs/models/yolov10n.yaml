@@ -1,0 +1,8 @@
+_base_: _ultralytics_base
+name: yolov10n
+display_name: "YOLOv10-N (Ultralytics)"
+status: implemented
+source:
+  paper: "Wang et al., YOLOv10: Real-Time End-to-End Object Detection, NeurIPS 2024 (THU-MIG/yolov10, integrated in Ultralytics)"
+model:
+  weights: yolov10n

@@ -1,0 +1,6 @@
+# RF-DETR environment. rfdetr package + Nano/Small weights: Apache-2.0.
+# torch: torch==2.11.0 torchvision==0.26.0 --index-url https://download.pytorch.org/whl/cu128
+rfdetr[train,loggers]==1.11.0
+numpy>=2.0,<2.4
+pyyaml
+pycocotools

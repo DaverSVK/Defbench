@@ -1,0 +1,45 @@
+# Pinned third-party repositories (cloned into third_party/<name> by scripts/clone_third_party.py).
+# Commits were the default-branch HEAD on 2026-09-29, verified via the GitHub API.
+TransUNet:
+  url: https://github.com/Beckschen/TransUNet
+  commit: 02ef0010b36eb8328b5e689eadaf613602edf9b8
+  license: Apache-2.0
+Swin-Unet:
+  url: https://github.com/HuCaoFighting/Swin-Unet
+  commit: f48f623e226e25b6e395c37207915c50aaa9c776
+  license: none (no LICENSE file)
+DEIMv2:
+  url: https://github.com/Intellindust-AI-Lab/DEIMv2
+  commit: 1d2ca42171570c713e78fc6a766ec5104b7f4724
+  license: DEIMv2 License (non-commercial research use)
+D-FINE:
+  url: https://github.com/Peterande/D-FINE
+  commit: 956d1709314c2c6a4df6f34de232054578a7449f
+  license: Apache-2.0
+RT-DETR:
+  url: https://github.com/lyuwenyu/RT-DETR
+  commit: 29320b6fd828f8e0987a71426cf2d961b09dfed7
+  license: Apache-2.0
+detectron2:
+  url: https://github.com/facebookresearch/detectron2
+  commit: fc3b7a1e658db27cdb52ee94ef5dcec7cc7eb1e7
+  license: Apache-2.0
+detrex:
+  url: https://github.com/IDEA-Research/detrex
+  commit: e244e6c3da3e84566728c52c21fb061d23ce0e2f
+  license: Apache-2.0
+  note: "its detectron2 submodule points to 70f454304e1a38378200459dd2dbca0f0f4a5ab4"
+mmdetection:
+  url: https://github.com/open-mmlab/mmdetection
+  commit: cfd5d3a985b0249de009b67d04f37263e11cdf3d   # v3.3.0
+  license: Apache-2.0
+ViT-Adapter:
+  url: https://github.com/czczup/ViT-Adapter
+  commit: fd64a5190f9f4530e8e5961cc87b2a3ad591190b
+  license: Apache-2.0 (LICENSE.md)
+  note: "reference only - ViT-Adapter + DINO is registered as unsupported (see configs/models/vit_adapter_dino.yaml)"
+DINO:
+  url: https://github.com/IDEA-Research/DINO
+  commit: d84a491d41898b3befd8294d1cf2614661fc0953
+  license: Apache-2.0
+  note: "reference only - DINO-Swin-T checkpoints are provided by detrex"

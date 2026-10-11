@@ -1,0 +1,17 @@
+_base_: _frcnn_base
+name: faster_rcnn_r50_fpn_cbam
+display_name: "Faster R-CNN + ResNet-50-FPN + CBAM on FPN outputs P2-P5"
+family: two_stage_cnn_attention
+status: verified
+source:
+  cbam_module: "https://github.com/Jongchan/attention-module MODELS/cbam.py @ 459efad0e05ee7dde50c41ca10a3d0800bc3792a (MIT)"
+  paper_cbam: "Woo et al., CBAM, ECCV 2018"
+model:
+  cbam:
+    levels: [P2, P3, P4, P5]      # torchvision FPN keys '0','1','2','3' (strides 4,8,16,32)
+    reduction_ratio: 16
+    recompute_p6: true            # P6 ('pool') = max_pool2d(refined P5, 1, 2) - same op as torchvision
+notes: >
+  Identical to faster_rcnn_r50_fpn (same base config, same COCO initialisation, same hyper-parameters,
+  seeds, data and split) except for the four CBAM modules inserted after the FPN output convolutions.
+  The CBAM weights are the only newly initialised parameters (PyTorch default init, as in the official code).

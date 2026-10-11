@@ -1,0 +1,44 @@
+name: vitdet_b_mask_rcnn_boxonly
+display_name: "ViTDet (ViT-B, MAE) Mask R-CNN architecture with the mask branch disabled (box-only)"
+family: vit_detector
+tasks: [bbox]
+environment: detectron2
+adapter: defectbench.models.adapters.detectron2_adapter:Detectron2Adapter
+status: implemented
+heavy: true                      # ViT-B at 1024x1024 LSJ
+extra_packages: [detectron2]
+source:
+  repo: https://github.com/facebookresearch/detectron2 (projects/ViTDet)
+  commit: "70f454304e1a38378200459dd2dbca0f0f4a5ab4 (detectron2 submodule of detrex e244e6c)"
+  config: projects/ViTDet/configs/COCO/mask_rcnn_vitdet_b_100ep.py
+  license: Apache-2.0
+  paper: "Li et al., Exploring Plain Vision Transformer Backbones for Object Detection, ECCV 2022"
+  variant_choice: "ViT-B is the smallest backbone released for ViTDet (B/L/H); no ViT-S ViTDet checkpoint exists."
+pretrained:
+  init: coco
+  url: https://dl.fbaipublicfiles.com/detectron2/ViTDet/COCO/mask_rcnn_vitdet_b/f325346929/model_final_61ccd1.pkl
+  source: "official ViTDet-B Mask R-CNN COCO checkpoint (box AP 51.6); mask-head weights are unused"
+model:
+  kind: vitdet
+  root_env: DETECTRON2_ROOT
+  root_default: /opt/detrex/detectron2
+  config: projects/ViTDet/configs/COCO/mask_rcnn_vitdet_b_100ep.py
+train:
+  epochs: 50
+  batch_size: 4                  # recipe: 64 (64 GPUs); LSJ 1024, AMP
+  lr: 6.25e-06                   # recipe AdamW lr 1e-4 @ bs 64, linear scaling to bs 4 (layer decay 0.7 kept)
+  weight_decay: 0.1
+  warmup_iters: 250
+  milestones: [0.889, 0.963]     # recipe milestones 163889/184375, 177546/184375
+  amp: true
+  act_checkpoint: false
+  num_workers: 2
+  patience: 10
+inference:
+  score_thresh: 0.001
+  max_dets: 100
+image_score_rule: max
+profiles:
+  default: {}
+  gpu8gb:
+    train: {batch_size: 2, lr: 3.125e-06, act_checkpoint: true}   # activation checkpointing trades time for memory

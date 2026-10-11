@@ -1,0 +1,27 @@
+abstract: true
+family: detr_realtime
+tasks: [bbox]
+environment: detr_family
+adapter: defectbench.models.adapters.detr_family:DetrFamilyAdapter
+extra_packages: [faster_coco_eval, transformers]
+train:
+  amp: true
+  total_batch_size: 16          # default profile (12-16 GB); lr scaled linearly vs. the recipe batch size
+  eval_batch_size: 16
+  num_workers: 2
+  patience: 15                  # early stopping (epochs without val AP improvement), added by the adapter
+inference:
+  score_thresh: 0.001
+  max_dets: 100
+image_score_rule: max
+heavy: false
+smoke_overrides:                # smoke test only: tiny batches (8 training images, drop_last=True upstream)
+  train_dataloader: {total_batch_size: 2}
+  val_dataloader: {total_batch_size: 2}
+profiles:
+  default: {}
+  gpu8gb:
+    # The upstream engines have no gradient accumulation. The 8 GB profile therefore halves the batch and
+    # scales the learning rates linearly (upstream rule) - this IS a recipe change and is recorded in
+    # framework/batch_lr_scaling.json of every run.
+    train: {total_batch_size: 8, eval_batch_size: 8}

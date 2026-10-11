@@ -1,0 +1,6 @@
+# Ultralytics environment (YOLO26, YOLOv10, YOLO12). License: AGPL-3.0.
+# torch: torch==2.11.0 torchvision==0.26.0 --index-url https://download.pytorch.org/whl/cu128
+ultralytics==8.4.165
+numpy>=2.0,<2.4
+pyyaml
+pillow

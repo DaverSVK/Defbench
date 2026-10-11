@@ -1,0 +1,23 @@
+_base_: _seg_base
+name: swin_unet_t
+display_name: "Swin-Unet (Swin-T, ImageNet-1k) - official implementation"
+family: segmentation_transformer
+status: verified
+source:
+  implementation: networks.vision_transformer.SwinUnet with configs/swin_tiny_patch4_window7_224_lite.yaml
+  repo: https://github.com/HuCaoFighting/Swin-Unet
+  commit: f48f623e226e25b6e395c37207915c50aaa9c776
+  license: "no LICENSE file in the repository (all rights reserved by default) - research use only; see README"
+  paper: "Cao et al., Swin-Unet, ECCV Workshops 2022"
+pretrained:
+  init: imagenet
+  url: https://github.com/SwinTransformer/storage/releases/download/v1.0.0/swin_tiny_patch4_window7_224.pth
+  source: "Microsoft Swin-T ImageNet-1k checkpoint (same file the Swin-Unet README links)"
+model:
+  arch: swin_unet
+  repo_cfg: configs/swin_tiny_patch4_window7_224_lite.yaml
+train:
+  # official: SGD base_lr 0.05 @ batch 24, momentum 0.9, wd 1e-4, poly; loss 0.4 CE + 0.6 Dice in the
+  # repo trainer - we keep the common 0.5/0.5 loss of this benchmark for comparability (documented).
+  optimizer: {type: sgd, lr: 0.01667, momentum: 0.9, weight_decay: 0.0001}  # 0.05 * 8/24
+  scheduler: {type: poly, power: 0.9, warmup_iters: 0}

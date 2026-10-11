@@ -1,0 +1,54 @@
+# Shared settings of the torchvision Faster R-CNN pair (reference + CBAM).
+# Keeping them in one base file guarantees an identical setup except for CBAM.
+abstract: true
+family: two_stage_cnn
+tasks: [bbox]
+environment: core
+adapter: defectbench.models.adapters.torchvision_frcnn:TorchvisionFasterRCNN
+source:
+  implementation: torchvision.models.detection.fasterrcnn_resnet50_fpn
+  repo: https://github.com/pytorch/vision
+  version: torchvision==0.26.0 (torch 2.11.0+cu128)
+  license: BSD-3-Clause
+  paper: "Ren et al., Faster R-CNN, NeurIPS 2015; Lin et al., FPN, CVPR 2017"
+pretrained:
+  init: coco                      # coco | imagenet | none (none requires from_scratch_explicit: true)
+  weights: FasterRCNN_ResNet50_FPN_Weights.COCO_V1
+  source: "torchvision COCO train2017 checkpoint fasterrcnn_resnet50_fpn_coco-258fb6c6.pth (box AP 37.0)"
+  from_scratch_explicit: false
+model:
+  variant: v1
+  trainable_backbone_layers: 3    # torchvision default for pretrained models (res3-res5 trainable)
+  min_size: 800                   # GeneralizedRCNNTransform resize (shorter side)
+  max_size: 1333
+  cbam: null
+train:
+  epochs: 36
+  batch_size: 4
+  grad_accum: 2                   # effective batch 8
+  eval_batch_size: 4
+  num_workers: 2
+  optimizer: {type: sgd, lr: 0.01, momentum: 0.9, weight_decay: 0.0001}   # linear scaling: 0.02 @ bs16
+  scheduler: {type: warmup_multistep, warmup_iters: 300, warmup_factor: 0.001, milestones: [0.67, 0.89], gamma: 0.1}
+  amp: true
+  amp_dtype: fp16
+  grad_clip: null
+  freeze_backbone_epochs: 0
+  eval_interval: 1
+  early_stopping: {monitor: val_coco_AP, mode: max, patience: 8, min_delta: 0.0}
+  deterministic: false
+augment:
+  hflip: 0.5
+  vflip: 0.5
+  color_jitter: {brightness: 0.2, contrast: 0.2}
+inference:
+  score_thresh: 0.001             # common low export threshold (AP over the whole score range)
+  max_dets: 100
+  nms_iou: 0.5
+  amp: false
+image_score_rule: max             # image-level anomaly score = max defect confidence (0 if none)
+heavy: false
+profiles:
+  default: {}                     # 12-16 GB GPU
+  gpu8gb:
+    train: {batch_size: 2, grad_accum: 4, eval_batch_size: 2}   # same effective batch size (8)

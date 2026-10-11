@@ -1,0 +1,11 @@
+_base_: _mmdet_swin_base
+name: cascade_mask_rcnn_swin_t
+display_name: "Cascade Mask R-CNN + Swin-T (instance masks DERIVED from semantic masks)"
+tasks: [instance_seg]
+model:
+  base_config: configs/cascade_rcnn/cascade-mask-rcnn_r50_fpn_1x_coco.py
+  with_mask: true
+notes: >
+  Trained with the standard mask loss ONLY where real pixel masks exist (Magnetic Tile). The instances are the
+  connected components of the semantic masks - a derived partition, flagged in the task matrix and results.
+  On NEU / GC10 (boxes only) use cascade_rcnn_swin_t_boxonly.

@@ -1,0 +1,40 @@
+abstract: true
+family: two_stage_transformer_backbone
+environment: mmdet
+adapter: defectbench.models.adapters.mmdet_adapter:MMDetAdapter
+status: implemented
+heavy: true
+extra_packages: [mmdet, mmcv, mmengine]
+source:
+  repo: https://github.com/open-mmlab/mmdetection (v3.3.0, cfd5d3a985b0249de009b67d04f37263e11cdf3d)
+  official_combination: >
+    SwinTransformer/Swin-Transformer-Object-Detection (mmdet 2.11 fork, commit c7b20110addde0f74b1fbf812b403d16a59a87a9),
+    config cascade_mask_rcnn_swin_tiny_patch4_window7_mstrain_480-800_giou_4conv1f_adamw_3x_coco.py.
+    That repository needs mmcv-full 1.3 / CUDA 11 and cannot run on sm_120 GPUs; the same architecture is therefore
+    rebuilt from maintained MMDetection 3.3 components and initialised from the official checkpoint.
+  license: Apache-2.0
+  paper: "Cai & Vasconcelos, Cascade R-CNN, CVPR 2018 / TPAMI 2019; Liu et al., Swin Transformer, ICCV 2021"
+pretrained:
+  init: coco
+  url: https://github.com/SwinTransformer/storage/releases/download/v1.0.2/cascade_mask_rcnn_swin_tiny_patch4_window7.pth
+  backbone_url: https://github.com/SwinTransformer/storage/releases/download/v1.0.0/swin_tiny_patch4_window7_224.pth
+  source: "official Swin-OD Cascade Mask R-CNN Swin-T 3x COCO checkpoint (box AP 50.4), keys converted to mmdet 3.x"
+train:
+  epochs: 36
+  batch_size: 2                  # recipe: 16 (8 GPUs x 2), AMP
+  grad_accum: 8                  # effective 16 -> recipe lr unchanged
+  lr: 0.0001
+  weight_decay: 0.05
+  warmup_iters: 500
+  milestones: [0.75, 0.917]      # recipe: steps at epochs 27 and 33 of 36
+  amp: true
+  num_workers: 2
+  patience: 10
+inference:
+  score_thresh: 0.001
+  max_dets: 100
+image_score_rule: max
+profiles:
+  default: {}
+  gpu8gb:
+    train: {batch_size: 1, grad_accum: 16}

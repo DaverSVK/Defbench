@@ -1,0 +1,8 @@
+_base_: _ultralytics_base
+name: yolo26s
+display_name: "YOLO26-S (Ultralytics)"
+status: implemented
+source:
+  paper: "YOLO26 (Ultralytics, released January 2026), NMS-free end-to-end head"
+model:
+  weights: yolo26s

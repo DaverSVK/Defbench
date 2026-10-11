@@ -1,0 +1,36 @@
+abstract: true
+family: yolo
+tasks: [bbox]
+environment: ultralytics
+adapter: defectbench.models.adapters.ultralytics_adapter:UltralyticsAdapter
+extra_packages: [ultralytics]
+source:
+  repo: https://github.com/ultralytics/ultralytics
+  version: ultralytics==8.4.165 (repo commit 8a55f07e379d0d0f66cc23d09e35f54588fd1435 on 2026-09-29)
+  license: AGPL-3.0 (code and weights)
+  weights_url: https://github.com/ultralytics/assets/releases/download/v8.4.0/<name>.pt
+pretrained:
+  init: coco
+  source: "official Ultralytics COCO checkpoint (release assets v8.4.0)"
+model:
+  imgsz: 640                    # Ultralytics default (letterbox)
+train:
+  # Ultralytics family defaults (optimizer 'auto', lr0 0.01, warmup 3 epochs, mosaic + close_mosaic 10, EMA, AMP)
+  # plus vertical flips, which are valid for surface images.
+  epochs: 150
+  batch_size: 16
+  patience: 30                  # early stopping on val fitness
+  num_workers: 2
+  amp: true
+  deterministic: false
+  flipud: 0.5
+inference:
+  score_thresh: 0.001           # common low export threshold
+  max_dets: 100
+  nms_iou: 0.7                  # only used by NMS-based heads (YOLO12)
+image_score_rule: max
+heavy: false
+profiles:
+  default: {}
+  gpu8gb:
+    train: {batch_size: 8, nbs: 64}   # Ultralytics nominal batch size 64 -> gradient accumulation keeps the recipe

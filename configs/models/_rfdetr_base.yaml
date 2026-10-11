@@ -1,0 +1,41 @@
+abstract: true
+family: detr_realtime
+tasks: [bbox]
+environment: rfdetr
+adapter: defectbench.models.adapters.rfdetr_adapter:RFDETRAdapter
+extra_packages: [rfdetr, supervision, pytorch_lightning]
+source:
+  implementation: rfdetr (RFDETRNano / RFDETRSmall)
+  repo: https://github.com/roboflow/rf-detr
+  version: rfdetr==1.11.0 (repo commit d9319e2235382441868682f6e2ebbf3640f6979d on 2026-09-29)
+  license: Apache-2.0 (package and Nano/Small/Medium/Large weights; XL/2XL are PML-1.0 and NOT used)
+  paper: "Robinson et al., RF-DETR: Neural Architecture Search for Real-Time Detection Transformers, 2025"
+pretrained:
+  init: coco
+  source: "official RF-DETR COCO checkpoint of the variant (DINOv2-distilled backbone), auto-downloaded by rfdetr"
+train:
+  # rfdetr defaults / README fine-tuning recipe: AdamW lr 1e-4, encoder lr 1.5e-4, effective batch 16, EMA
+  epochs: 60
+  batch_size: 4
+  grad_accum: 4
+  lr: 0.0001
+  lr_encoder: 0.00015
+  weight_decay: 0.0001
+  warmup_epochs: 0.0
+  num_workers: 2
+  use_ema: true
+  early_stopping: true
+  early_stopping_patience: 10
+  checkpoint_interval: 10
+  # rfdetr's default 'vernier' backend imports pyarrow, whose DLL is blocked by Windows Application Control on the
+  # development machine; the package documents all four backends as producing identical metrics.
+  eval_backend: faster_coco_eval
+inference:
+  score_thresh: 0.001
+  max_dets: 100
+image_score_rule: max
+heavy: false
+profiles:
+  default: {}
+  gpu8gb:
+    train: {batch_size: 2, grad_accum: 8}   # same effective batch (16)

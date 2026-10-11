@@ -1,0 +1,42 @@
+_base_: _detr_family_base
+name: deimv2_dinov3_s
+display_name: "DEIMv2-S (ViT backbone: DINOv3-distilled ViT-Tiny + STA)"
+family: detr_realtime_vit
+status: implemented
+source:
+  repo: https://github.com/Intellindust-AI-Lab/DEIMv2
+  commit: 1d2ca42171570c713e78fc6a766ec5104b7f4724
+  config: configs/deimv2/deimv2_dinov3_s_coco.yml
+  license: "DEIMv2 License - non-commercial research/education use only"
+  paper: "Huang et al., Real-Time Object Detection Meets DINOv3 (DEIMv2), 2025"
+  upstream_requirements: "python 3.11, torch 2.5.1 / torchvision 0.20.1 (tested upstream); this project uses torch 2.11.0+cu128 (needed for sm_120)"
+  variant_choice: >
+    Explicitly chosen ViT-backbone variant: S = DINOv3STAs(name=vit_tiny, embed_dim 192, 3 heads) - a ViT-Tiny
+    distilled from DINOv3-S (the smallest DEIMv2 variant with a ViT backbone; Atto-N use HGNetv2 CNNs).
+    DEIMv2 is registered once (also covers the "ViT-based detector" category).
+pretrained:
+  init: coco
+  hf_repo: Intellindust/DEIMv2_DINOv3_S_COCO
+  hf_file: model.safetensors
+  hf_revision: cf0540f3f319bb8ecbe132624358a35a7beb86d5
+  source: "official DEIMv2-S COCO checkpoint (50.9 AP) released by the authors on Hugging Face; converted to {'model': state_dict} for -t tuning"
+model:
+  repo: DEIMv2
+  package: engine
+  base_config: configs/deimv2/deimv2_dinov3_s_coco.yml
+  input_size: 640
+  normalize: [[0.485, 0.456, 0.406], [0.229, 0.224, 0.225]]
+schedule_overrides:
+  # the repo's base 58-epoch DEIM schedule (configs/base/deimv2.yml) instead of the 132-epoch COCO schedule of the S
+  # config; matcher_change_epoch scaled proportionally (100/132*58 = 44)
+  epoches: 58
+  flat_epoch: 29
+  no_aug_epoch: 8
+  train_dataloader:
+    dataset: {transforms: {policy: {epoch: [4, 29, 50]}}}
+    collate_fn: {mixup_epochs: [4, 29], stop_epoch: 50, copyblend_epochs: [4, 50]}
+  DEIMCriterion: {matcher: {matcher_change_epoch: 44}}
+smoke_overrides:
+  epoches: 1
+  train_dataloader: {total_batch_size: 2}
+  val_dataloader: {total_batch_size: 2}

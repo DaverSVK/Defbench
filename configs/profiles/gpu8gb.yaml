@@ -1,0 +1,8 @@
+name: gpu8gb
+description: >
+  Low-memory profile (e.g. 8 GB laptop GPUs such as the RTX 5050 used during development). Model
+  configs map this profile to smaller per-step batches with proportionally larger gradient
+  accumulation, i.e. the SAME effective batch size and schedule - the method is unchanged.
+  Where this is impossible (e.g. BatchNorm-heavy models whose statistics depend on the per-step
+  batch) the model config states it explicitly.
+gpu_memory_gb: [8, 8]

@@ -1,0 +1,6 @@
+_base_: _rfdetr_base
+name: rfdetr_small
+display_name: "RF-DETR Small (512 px)"
+status: implemented
+model:
+  variant: small         # native resolution 512 (rfdetr RFDETRSmallConfig)

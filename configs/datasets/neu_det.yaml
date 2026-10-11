@@ -1,0 +1,34 @@
+name: neu_det
+display_name: "NEU Surface Defect Database - NEU-DET (detection version with VOC XML boxes)"
+kaggle_slug: kaustubhdikshit/neu-surface-defect-database
+url: https://www.kaggle.com/datasets/kaustubhdikshit/neu-surface-defect-database/data
+raw_root: data/raw/neu_det          # searched recursively; nested folder names are not assumed
+processed_root: data/processed/neu_det
+format: voc
+classes: [crazing, inclusion, patches, pitted_surface, rolled-in_scale, scratches]
+label_aliases: {}
+# NEU contains no defect-free images -> image-level AUROC/AUPRC are not defined (N/A).
+empty_annotation_policy: exclude     # exclude | normal
+invalid_label_policy: exclude_image
+unannotated_image_policy: exclude
+group:
+  method: none                        # no product / sequence identifier exists in NEU
+near_duplicates:
+  hash: phash                         # 64-bit perceptual hash on the grayscale image
+  max_distance: 4                     # Hamming distance <= 4 -> "suspicious similar" + same split group
+  use_for_grouping: true
+split:
+  # The Kaggle archive contains train/validation folders (1440/360). They were created by
+  # the Kaggle uploader, not by the dataset authors, and there is no test split -> not treated
+  # as an official split. Default: new stratified 70/15/15 split. `strategy: provided` keeps the
+  # Kaggle folders (validation -> test, a stratified 15 % val is carved from train).
+  strategy: stratified_group
+  ratios: {train: 0.70, val: 0.15, test: 0.15}
+  split_seed: 20260929                # fixed; independent from training seeds 17/42/73
+input:
+  channels: 1                         # grayscale source images
+  channel_policy: replicate_gray_to_rgb
+tasks:
+  bbox: annotation
+  mask: none
+  normal_images: false

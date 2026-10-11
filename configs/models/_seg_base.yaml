@@ -1,0 +1,35 @@
+# Shared settings of all segmentation models (same data pipeline, loss, input size, selection rule).
+abstract: true
+family: segmentation
+tasks: [seg]
+environment: core
+adapter: defectbench.models.adapters.segmentation:SegmentationAdapter
+allow_weak_box_supervision: false   # box-filled pseudo masks only as an explicit, separate experiment
+model:
+  seg_mode: multiclass              # multiclass: background + K defect classes (MT pixel class = folder class)
+  input_size: [224, 224]            # common input for all segmenters (TransUNet/Swin-Unet native size)
+  normalize: imagenet
+train:
+  epochs: 150
+  batch_size: 8
+  grad_accum: 1
+  eval_batch_size: 8
+  num_workers: 2
+  amp: true
+  amp_dtype: fp16
+  grad_clip: null
+  freeze_backbone_epochs: 0     # >0 freezes the pretrained encoder for the first N epochs
+  eval_interval: 1
+  early_stopping: {monitor: val_pixel_AP_threshold_free, mode: max, patience: 25, min_delta: 0.0}
+  deterministic: false
+augment:
+  hflip: 0.5
+  vflip: 0.5
+  color_jitter: {brightness: 0.2, contrast: 0.2}
+# image-level anomaly score of a segmenter: fixed BEFORE testing
+image_score_rule: {rule: topk_mean, topk: 100}   # mean of the 100 highest defect-probability pixels
+aupro_fpr_limit: 0.3
+heavy: false
+profiles:
+  default: {}
+  gpu8gb: {}                        # all segmenters fit into 8 GB at 224x224, batch 8

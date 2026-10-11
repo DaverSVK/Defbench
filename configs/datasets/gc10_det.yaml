@@ -1,0 +1,45 @@
+name: gc10_det
+display_name: "GC10-DET - Metallic Surface Defect Detection"
+kaggle_slug: alex000kim/gc10det
+url: https://www.kaggle.com/datasets/alex000kim/gc10det/data
+raw_root: data/raw/gc10_det
+processed_root: data/processed/gc10_det
+format: voc
+# Order and English names follow "Defects Description.xlsx" shipped with the dataset.
+classes: [punching_hole, welding_line, crescent_gap, water_spot, oil_spot, silk_spot, inclusion,
+          rolled_pit, crease, waist_folding]
+label_aliases:
+  1_chongkong: punching_hole
+  2_hanfeng: welding_line
+  3_yueyawan: crescent_gap
+  4_shuiban: water_spot
+  5_youban: oil_spot
+  6_siban: silk_spot
+  7_yiwu: inclusion
+  8_yahen: rolled_pit
+  9_zhehen: crease
+  10_yaozhe: waist_folding
+  10_yaozhed: waist_folding           # spelling variant found in the XML files (audit)
+empty_annotation_policy: exclude       # XML with no objects inside a defect folder is not a trusted negative
+invalid_label_policy: exclude_image    # e.g. an object named "d": the defect would remain unlabeled
+unannotated_image_policy: exclude      # images without XML
+group:
+  # img_<camera>_<id>_<frame>.jpg ; <id> is shared by many frames/cameras -> treated as the source
+  # (coil / acquisition) identifier. Inferred from the naming pattern, documented as an assumption.
+  method: regex
+  regex: '^img_\d+_(?P<group>[^_]+)_\d+$'
+near_duplicates:
+  hash: phash
+  max_distance: 4
+  use_for_grouping: true
+split:
+  strategy: stratified_group
+  ratios: {train: 0.70, val: 0.15, test: 0.15}
+  split_seed: 20260929
+input:
+  channels: 1
+  channel_policy: replicate_gray_to_rgb
+tasks:
+  bbox: annotation
+  mask: none
+  normal_images: false

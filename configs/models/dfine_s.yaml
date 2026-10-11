@@ -1,0 +1,25 @@
+_base_: _detr_family_base
+name: dfine_s
+display_name: "D-FINE-S (HGNetv2-B0)"
+status: implemented
+source:
+  repo: https://github.com/Peterande/D-FINE
+  commit: 956d1709314c2c6a4df6f34de232054578a7449f
+  config: configs/dfine/custom/objects365/dfine_hgnetv2_s_obj2custom.yml (official custom-dataset fine-tuning recipe)
+  license: Apache-2.0 (code); Objects365-pretrained weights may be subject to Objects365 terms (README)
+  paper: "Peng et al., D-FINE: Redefine Regression Task in DETRs as Fine-grained Distribution Refinement, ICLR 2025"
+pretrained:
+  init: objects365+coco
+  url: https://github.com/Peterande/storage/releases/download/dfinev1.0/dfine_s_obj2coco.pth
+  source: "official D-FINE-S Objects365->COCO checkpoint (50.7 AP); the README recommends Objects365 pre-training for fine-tuning"
+model:
+  repo: D-FINE
+  package: src
+  base_config: configs/dfine/custom/objects365/dfine_hgnetv2_s_obj2custom.yml
+  input_size: 640
+  normalize: null
+schedule_overrides: {}          # official recipe: 64 epochs, augmentation stop at epoch 56
+smoke_overrides:
+  epochs: 1
+  train_dataloader: {total_batch_size: 2}
+  val_dataloader: {total_batch_size: 2}

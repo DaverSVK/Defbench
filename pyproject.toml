@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "defectbench"
+version = "0.1.0"
+description = "Research benchmark of CNN, attention, U-Net and transformer models for surface-defect detection and segmentation (HNS)."
+readme = "README.md"
+requires-python = ">=3.10"
+# Only light dependencies are declared here so that the package (unified prediction
+# format, config loading, subprocess runners) can be installed with `--no-deps` into
+# every framework-specific environment. Heavy dependencies live in requirements/*.txt.
+dependencies = ["numpy", "pyyaml"]
+
+[project.scripts]
+defectbench = "defectbench.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["defectbench*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "gpu: test requires a CUDA GPU",
+    "slow: test takes more than a few seconds",
+]
